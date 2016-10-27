@@ -1,4 +1,4 @@
-[webapi]
+[web_api]
 base_url = "http://sspanel.xyz"
 token = "token"
 node_id = 1
