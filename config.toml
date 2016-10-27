@@ -1,0 +1,9 @@
+[webapi]
+base_url = "http://sspanel.xyz"
+token = "token"
+node_id = 1
+
+[redis]
+host = "127.0.0.1:6379"
+pass = ""
+db = 1
