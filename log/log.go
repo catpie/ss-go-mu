@@ -5,11 +5,11 @@ import (
 )
 
 var (
-	log = logrus.New()
+	Log = logrus.New()
 )
 
 func Init() {
-	log.Formatter = new(logrus.JSONFormatter)
-	log.Formatter = new(logrus.TextFormatter) // default
-	log.Level = logrus.DebugLevel
+	Log.Formatter = new(logrus.JSONFormatter)
+	Log.Formatter = new(logrus.TextFormatter) // default
+	Log.Level = logrus.DebugLevel
 }
