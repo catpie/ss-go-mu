@@ -76,6 +76,9 @@ func SubmitTraffic() error {
 			continue
 		}
 	}
+	if len(logs) == 0 {
+		return nil
+	}
 	err = WebApiClient.UpdateTraffic(logs)
 	if err != nil {
 		// @todo
