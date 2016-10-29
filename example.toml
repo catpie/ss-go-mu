@@ -1,3 +1,6 @@
+[base]
+sync_time = 60
+
 [web_api]
 base_url = "http://sspanel.xyz"
 token = "token"

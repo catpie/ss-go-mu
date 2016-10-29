@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 var (
 	config      = new(Config)
 	cfgFilePath = "config.toml"
@@ -8,6 +10,11 @@ var (
 type Config struct {
 	WebApi WebApiCfg `toml:"web_api"`
 	Redis  RedisCfg  `toml:"redis"`
+	Base   BaseCfg   `toml:"base"`
+}
+
+type BaseCfg struct {
+	SyncTime time.Duration `toml:"sync_time"`
 }
 
 type WebApiCfg struct {

@@ -5,6 +5,7 @@ import (
 	"github.com/catpie/musdk-go"
 	. "github.com/catpie/ss-go-mu/log"
 	"io/ioutil"
+	"time"
 )
 
 func InitConfig() error {
@@ -26,17 +27,12 @@ func InitWebApi() error {
 }
 
 func BootSs() error {
-	users, err := WebApiClient.GetUsers()
-	Log.Info(users)
-	if err != nil {
-		// handle error
-		Log.Error(err)
-	}
-
-	for _, user := range users {
-		Log.Info(user.Id)
-		runWithCustomMethod(user)
-	}
-
+	go func() {
+		for {
+			CheckUsers()
+			SubmitTraffic()
+			time.Sleep(config.Base.SyncTime * time.Second)
+		}
+	}()
 	return nil
 }

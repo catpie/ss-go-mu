@@ -5,8 +5,12 @@ import (
 )
 
 func main() {
+	var err error
 	Log.Info("Start")
-	InitConfig()
+	err = InitConfig()
+	if err != nil {
+		panic(err)
+	}
 	InitWebApi()
 	BootSs()
 
