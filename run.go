@@ -35,7 +35,7 @@ func CheckUser(user UserInterface) error {
 func CheckUsers() error {
 	Log.Info("check users...")
 	users, err := WebApiClient.GetUsers()
-	Log.Info(users)
+	Log.Debug(users)
 	if err != nil {
 		// handle error
 		Log.Error(err)
@@ -49,6 +49,7 @@ func CheckUsers() error {
 }
 
 func SubmitTraffic() error {
+	Log.Info("submit traffic....")
 	users, err := WebApiClient.GetUsers()
 	if err != nil {
 		return err
@@ -69,8 +70,6 @@ func SubmitTraffic() error {
 			UserId: user.GetId(),
 		}
 		logs = append(logs, log)
-
-		Log.Info(fmt.Sprintf("success update traffic usage for port %d,total update size %d", user.GetPort(), size))
 		err = storage.SetSize(user, 0)
 		if err != nil {
 			Log.Error(fmt.Sprintf("set storage size to 0 fail for port:%d", user.GetPort()), err)
