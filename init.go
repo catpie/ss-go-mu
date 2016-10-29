@@ -15,6 +15,7 @@ func InitConfig() error {
 	if _, err := toml.Decode(string(data), &config); err != nil {
 		return err
 	}
+	Log.Info(config)
 	return nil
 }
 
@@ -26,6 +27,7 @@ func InitWebApi() error {
 
 func BootSs() error {
 	users, err := WebApiClient.GetUsers()
+	Log.Info(users)
 	if err != nil {
 		// handle error
 	}

@@ -19,5 +19,5 @@ type WebApiCfg struct {
 type RedisCfg struct {
 	Host string `toml:"host"`
 	Pass string `toml:"pass"`
-	Db   int64  `toml:"db"`
+	Db   int    `toml:"db"`
 }
