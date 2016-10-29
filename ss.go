@@ -165,20 +165,22 @@ func handleConnection(user UserInterface, conn *ss.Conn, auth bool) {
 	// debug conn info
 	Log.Debug(fmt.Sprintf("%d conn debug:  local addr: %s | remote addr: %s network: %s ", user.GetPort(),
 		conn.LocalAddr().String(), conn.RemoteAddr().String(), conn.RemoteAddr().Network()))
-	err = storage.IncrSize(user, res_size)
-	if err != nil {
-		Log.Error(err)
-		return
-	}
-	err = storage.MarkUserOnline(user)
-	if err != nil {
-		Log.Error(err)
-		return
-	}
-	Log.Debug(fmt.Sprintf("[port-%d] store size: %d", user.GetPort(), res_size))
+	go func() {
+		err = storage.IncrSize(user, res_size)
+		if err != nil {
+			Log.Error(err)
+			return
+		}
+		err = storage.MarkUserOnline(user)
+		if err != nil {
+			Log.Error(err)
+			return
+		}
+		Log.Debug(fmt.Sprintf("[port-%d] store size: %d", user.GetPort(), res_size))
 
-	Log.Info(fmt.Sprintf("piping %s<->%s ota=%v connOta=%v", conn.RemoteAddr(), host, ota, conn.IsOta()))
+		Log.Info(fmt.Sprintf("piping %s<->%s ota=%v connOta=%v", conn.RemoteAddr(), host, ota, conn.IsOta()))
 
+	}()
 	if ota {
 		go PipeThenCloseOta(conn, remote, false, host, user)
 	} else {
@@ -303,10 +305,12 @@ func PipeThenClose(src, dst net.Conn, is_res bool, host string, user UserInterfa
 		if n > 0 {
 			size, err = dst.Write(buf[0:n])
 			if is_res {
-				err = storage.IncrSize(user, size)
-				if err != nil {
-					Log.Error(err)
-				}
+				go func() {
+					err = storage.IncrSize(user, size)
+					if err != nil {
+						Log.Error(err)
+					}
+				}()
 				Log.Debug(fmt.Sprintf("[port-%d] store size: %d", user.GetPort(), size))
 			}
 			if err != nil {
@@ -377,11 +381,13 @@ func PipeThenCloseOta(src *ss.Conn, dst net.Conn, is_res bool, host string, user
 			break
 		}
 		if is_res {
-			err := storage.IncrSize(user, n)
-			if err != nil {
-				Log.Error(err)
-			}
-			Log.Debug(fmt.Sprintf("[port-%d] store size: %d", user.GetPort(), n))
+			go func() {
+				err := storage.IncrSize(user, n)
+				if err != nil {
+					Log.Error(err)
+				}
+				Log.Debug(fmt.Sprintf("[port-%d] store size: %d", user.GetPort(), n))
+			}()
 		}
 	}
 	return
