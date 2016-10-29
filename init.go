@@ -30,6 +30,7 @@ func BootSs() error {
 	Log.Info(users)
 	if err != nil {
 		// handle error
+		Log.Error(err)
 	}
 
 	for _, user := range users {
