@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	. "github.com/catpie/ss-go-mu/log"
 	redis "gopkg.in/redis.v3"
 	"time"
@@ -19,6 +20,15 @@ type RedisClient struct {
 
 func (r *RedisClient) SetClient(client *redis.Client) {
 	r.client = client
+}
+
+func (r *RedisClient) StoreUser(user UserInterface) error {
+	data, err := json.Marshal(user)
+	if err != nil {
+		return err
+	}
+	err = r.client.Set(genUserInfoKey(user), data, DefaultExpireTime).Err()
+	return err
 }
 
 func (r *RedisClient) Exists(u UserInterface) (bool, error) {

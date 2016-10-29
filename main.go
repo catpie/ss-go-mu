@@ -12,6 +12,7 @@ func main() {
 		panic(err)
 	}
 	InitWebApi()
+	InitRedis()
 	BootSs()
 
 	waitSignal()

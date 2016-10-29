@@ -8,9 +8,9 @@ func SetStorage(s Storage) {
 
 type Storage interface {
 	// GetUserInfo(UserInterface ) (UserInterface Info, error)
-	// StoreUser(UserInterface Info) error
-	Exists(UserInterface) (bool, error)
-	Del(UserInterface) error
+	StoreUser(u UserInterface) error
+	Exists(u UserInterface) (bool, error)
+	Del(u UserInterface) error
 	ClearAll() error
 	IncrSize(u UserInterface, size int) error
 	GetSize(u UserInterface) (int64, error)

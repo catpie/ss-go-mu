@@ -7,6 +7,7 @@ import (
 type LogTraffic func(id, u, d int64) error
 
 type UserInterface interface {
+	GetId() int64
 	GetPort() int
 	GetPasswd() string
 	GetMethod() string

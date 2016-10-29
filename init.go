@@ -27,6 +27,7 @@ func InitWebApi() error {
 }
 
 func BootSs() error {
+	storage.ClearAll()
 	go func() {
 		for {
 			CheckUsers()
