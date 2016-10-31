@@ -4,45 +4,57 @@ import (
 	"fmt"
 	"github.com/catpie/musdk-go"
 	. "github.com/catpie/ss-go-mu/log"
+	"strconv"
 )
 
 func RunSs(user UserInterface) error {
-	isExist, err := storage.Exists(user)
-	if err != nil {
-		return err
-	}
-	if isExist {
-		Log.Debugf("user %d is running... skip", user.GetId())
-		return nil
-	}
-	err = storage.StoreUser(user)
-	if err != nil {
-		return err
-	}
 	runWithCustomMethod(user)
+	users[user.GetId()] = user
 	return nil
 }
 
 func StopSs(user UserInterface) error {
+	passwdManager.del(strconv.Itoa(user.GetPort()))
+	delete(users, user.GetId())
 	return nil
 }
 
 func CheckUser(user UserInterface) error {
-	go RunSs(user)
+	Log.Info("check user: ", user)
+	u, ok := users[user.GetId()]
+	if !ok {
+		return func() error {
+			if user.IsEnable() {
+				Log.Infof("run user %d", user.GetId())
+				return RunSs(user)
+			}
+			return nil
+		}()
+	}
+	if !u.IsEnable() {
+		Log.Infof("disable user %d", u.GetId())
+		return StopSs(user)
+	}
+	if user != u {
+		Log.Infof("%d info is changed... restart ...", user.GetId())
+		StopSs(user)
+		return RunSs(user)
+	}
 	return nil
 }
 
 func CheckUsers() error {
 	Log.Info("check users...")
-	users, err := WebApiClient.GetUsers()
-	Log.Debug(users)
+	Log.Info("user in memery: ", users)
+	us, err := WebApiClient.GetUsers()
+	Log.Debug(us)
 	if err != nil {
 		// handle error
 		Log.Error(err)
 	}
 
-	for _, user := range users {
-		go CheckUser(user)
+	for _, u := range us {
+		go CheckUser(u)
 	}
 
 	return nil
