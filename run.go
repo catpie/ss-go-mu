@@ -35,7 +35,7 @@ func CheckUser(user UserInterface) error {
 		Log.Infof("disable user %d", u.GetId())
 		return StopSs(user)
 	}
-	if user != u {
+	if u.GetPasswd() != user.GetPasswd() || u.GetMethod() != user.GetMethod() {
 		Log.Infof("%d info is changed... restart ...", user.GetId())
 		StopSs(user)
 		return RunSs(user)
