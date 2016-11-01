@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	. "github.com/catpie/ss-go-mu/log"
-	redis "gopkg.in/redis.v3"
+	redis "gopkg.in/redis.v5"
 	"time"
 )
 
@@ -106,8 +106,8 @@ func InitRedis() error {
 	conf := config.Redis
 	client := redis.NewClient(&redis.Options{
 		Addr:     conf.Host,
-		Password: conf.Pass, // no password set
-		DB:       conf.Db,   // use default DB
+		Password: conf.Pass,    // no password set
+		DB:       int(conf.Db), // use default DB
 	})
 
 	pong, err := client.Ping().Result()
