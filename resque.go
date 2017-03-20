@@ -1,20 +1,14 @@
 package main
 
 import (
-	"github.com/kavu/go-resque"         // Import this package
-	_ "github.com/kavu/go-resque/godis" // Use godis driver
-	"github.com/simonz05/godis/redis"   // Redis client from godis package
+	"github.com/catpie/ss-go-mu/log"
 )
 
-var (
-	enqueuer *resque.RedisEnqueuer
+const (
+	QueueName = "ss-go-mu-queue"
 )
 
-func InitQueue() error {
-	var err error
-
-	client := redis.New("tcp:"+config.Redis.Host, int(config.Redis.Db), config.Redis.Pass) // Create new Redis client to use for enqueuing
-	enqueuer = resque.NewRedisEnqueuer("godis", client)                                    // Create enqueuer instance
-
-	return err
+func Pop() {
+	err := Redis.GetClient().LPop(QueueName).Err()
+	log.Log.Error(err)
 }

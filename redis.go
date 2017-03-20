@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/catpie/musdk-go"
 	. "github.com/catpie/ss-go-mu/log"
 	redis "gopkg.in/redis.v5"
+	"sync"
 	"time"
 )
 
@@ -11,6 +13,8 @@ const (
 	DefaultExpireTime          = 0
 	DefaultOnlineKeyExpireTime = time.Minute * 5
 )
+
+var RedisLock = new(sync.Mutex)
 
 var Redis = new(RedisClient)
 
@@ -20,6 +24,10 @@ type RedisClient struct {
 
 func (r *RedisClient) SetClient(client *redis.Client) {
 	r.client = client
+}
+
+func (r *RedisClient) GetClient() (client *redis.Client) {
+	return r.client
 }
 
 func (r *RedisClient) StoreUser(user UserInterface) error {
@@ -44,6 +52,14 @@ func (r *RedisClient) ClearAll() error {
 }
 
 // traffic
+func (r *RedisClient) IncrSizeToQueue(u UserInterface, size int) error {
+	log := musdk.UserTrafficLog{
+		UserId: u.GetId(),
+		D:      int64(size),
+	}
+	return r.client.LPush(QueueName, log).Err()
+}
+
 func (r *RedisClient) IncrSize(u UserInterface, size int) error {
 	key := genUserFlowKey(u)
 	incrSize := int(float32(size))
