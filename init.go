@@ -22,7 +22,7 @@ func InitConfig() error {
 
 func InitWebApi() error {
 	cfg := config.WebApi
-	WebApiClient = musdk.NewClient(cfg.Url, cfg.Token, cfg.NodeId)
+	WebApiClient = musdk.NewClient(cfg.Url, cfg.Token, cfg.NodeId, musdk.TypeSs)
 	return nil
 }
 
