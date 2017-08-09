@@ -1,0 +1,15 @@
+version: "2"
+
+services:
+  ss:
+    image: orvice/ss-go-mu
+    restart: always
+    volumes:
+      - ./log:/var/log
+    environment:
+      - MU_URI=https://demo.sspanel.xyz/mu/v2
+      - MU_NODE_ID=1
+      - MU_TOKEN=forLove
+    container_name: shadowsocks-mu
+    network_mode: host
+ 
