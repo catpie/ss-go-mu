@@ -5,6 +5,7 @@ import (
 	"net"
 	"time"
 
+	"github.com/orvice/utils/log"
 	"github.com/shadowsocks/go-shadowsocks2/socks"
 )
 
@@ -77,8 +78,9 @@ func tcpLocal(addr, server string, shadow func(net.Conn) net.Conn, getAddr func(
 }
 
 // Listen on addr for incoming connections.
-func tcpRemote(u User, addr string, shadow func(net.Conn) net.Conn) {
+func tcpRemote(u *User, addr string, shadow func(net.Conn) net.Conn) {
 	l, err := net.Listen("tcp", addr)
+	u.tcpConn = l
 	if err != nil {
 		logf("failed to listen on %s: %v", addr, err)
 		return
@@ -112,7 +114,10 @@ func tcpRemote(u User, addr string, shadow func(net.Conn) net.Conn) {
 			rc.(*net.TCPConn).SetKeepAlive(true)
 
 			logf("proxy %s <-> %s", c.RemoteAddr(), tgt)
-			_, _, err = relay(c, rc)
+			rl, lr, err := relay(c, rc)
+			go func() {
+				log.Infof("get len: %d %d  user: %d", rl, lr, u.Id)
+			}()
 			if err != nil {
 				if err, ok := err.(net.Error); ok && err.Timeout() {
 					return // ignore i/o timeout

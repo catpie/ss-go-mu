@@ -14,7 +14,7 @@ var (
 
 func CheckUsers() error {
 	log.Info("check users...")
-	log.Info("user in memery: ", users)
+	log.Debugf("user in memery: ", users)
 	us, err := WebApiClient.GetUsers()
 	log.Debug(us)
 	if err != nil {
@@ -30,10 +30,23 @@ func CheckUsers() error {
 }
 
 func checkUser(u musdk.User) {
+	v, ok := users[u.Id]
+	if !ok {
+		// Add and run
+		user := NewUser(u)
+		AddUser(u.Id, user)
+		runUser(user)
+		return
+	}
+	// check restart
+	if v.apiUser != u {
+		// @todo restart user
+	}
 
 }
 
-func runUser(user User, u musdk.User) {
+func runUser(user *User) {
+	u := user.apiUser
 	addr := fmt.Sprintf(":%d", u.Port)
 	cipher := u.Method
 	password := u.Passwd
