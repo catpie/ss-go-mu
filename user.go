@@ -20,16 +20,22 @@ type User struct {
 	apiUser musdk.User
 }
 
-func (u User) AddU(t int64) {
+func (u *User) AddU(t int64) {
 	u.lock.Lock()
 	u.u += t
 	u.lock.Unlock()
 }
 
-func (u User) AddD(t int64) {
+func (u *User) AddD(t int64) {
 	u.lock.Lock()
 	u.d += t
 	u.lock.Unlock()
+}
+
+func (u *User) Close() error {
+	u.tcpConn.Close()
+	u.udpConn.Close()
+	return nil
 }
 
 func NewUser(u musdk.User) *User {

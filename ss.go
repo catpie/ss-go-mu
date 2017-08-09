@@ -33,16 +33,24 @@ func checkUser(u musdk.User) {
 	v, ok := users[u.Id]
 	if !ok {
 		// Add and run
-		user := NewUser(u)
-		AddUser(u.Id, user)
-		runUser(user)
+		log.Infof("run new user %d", v.Id)
+		runNewUser(u)
 		return
 	}
 	// check restart
 	if v.apiUser != u {
-		// @todo restart user
+		log.Infof("restart user %d", v.Id)
+		v.Close()
+		delete(users, u.Id)
+		runNewUser(u)
 	}
 
+}
+
+func runNewUser(u musdk.User) {
+	user := NewUser(u)
+	AddUser(u.Id, user)
+	runUser(user)
 }
 
 func runUser(user *User) {
