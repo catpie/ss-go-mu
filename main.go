@@ -1,19 +1,30 @@
 package main
 
 import (
-	. "github.com/catpie/ss-go-mu/log"
+	"github.com/orvice/utils/log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
-	var err error
-	Log.Info("Start")
-	err = InitConfig()
-	if err != nil {
-		panic(err)
-	}
+	// var err error
+	log.Info("Start")
+	initCfg()
 	InitWebApi()
-	InitRedis()
-	BootSs()
 
 	waitSignal()
+}
+
+func waitSignal() {
+	var sigChan = make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGHUP)
+	for sig := range sigChan {
+		if sig == syscall.SIGHUP {
+		} else {
+			// is this going to happen?
+			log.Infof("caught signal %v, exit", sig)
+			os.Exit(0)
+		}
+	}
 }

@@ -1,30 +1,38 @@
 package main
 
-import "time"
+import (
+	"github.com/orvice/utils/env"
+	"time"
+)
 
 var (
-	config      = new(Config)
-	cfgFilePath = "config.toml"
+	cfg = new(Config)
 )
 
 type Config struct {
-	WebApi WebApiCfg `toml:"web_api"`
-	Redis  RedisCfg  `toml:"redis"`
-	Base   BaseCfg   `toml:"base"`
+	WebApi     WebApiCfg
+	Base       BaseCfg
+	SyncTime   time.Duration
+	UDPTimeout time.Duration
 }
 
 type BaseCfg struct {
-	SyncTime time.Duration `toml:"sync_time"`
 }
 
 type WebApiCfg struct {
-	Url    string `toml:"base_url"`
-	Token  string `toml:"token"`
-	NodeId int    `toml:"node_id"`
+	Url    string
+	Token  string
+	NodeId int
 }
 
-type RedisCfg struct {
-	Host string `toml:"host"`
-	Pass string `toml:"pass"`
-	Db   int64  `toml:"db"`
+func initCfg() {
+	cfg.WebApi = WebApiCfg{
+		Url:    env.Get("MU_URI"),
+		Token:  env.Get("MU_TOKEN"),
+		NodeId: env.GetInt("MU_NODE_ID"),
+	}
+	st := env.GetInt("SYNC_TIME", 60)
+	udpTimeout := env.GetInt("UDP_TIMEOUT", 6)
+	cfg.SyncTime = time.Second * time.Duration(st)
+	cfg.UDPTimeout = time.Second * time.Duration(udpTimeout)
 }

@@ -1,38 +1,25 @@
 package main
 
 import (
-	"github.com/BurntSushi/toml"
 	"github.com/catpie/musdk-go"
-	. "github.com/catpie/ss-go-mu/log"
-	"io/ioutil"
+	"github.com/orvice/utils/log"
 	"time"
 )
 
-func InitConfig() error {
-	data, err := ioutil.ReadFile(cfgFilePath)
-	if err != nil {
-		return err
-	}
-	if _, err := toml.Decode(string(data), &config); err != nil {
-		return err
-	}
-	Log.Info(config)
-	return nil
-}
-
 func InitWebApi() error {
-	cfg := config.WebApi
+	log.Info("init mu api")
+	cfg := cfg.WebApi
 	WebApiClient = musdk.NewClient(cfg.Url, cfg.Token, cfg.NodeId, musdk.TypeSs)
 	return nil
 }
 
-func BootSs() error {
+func Boot() error {
 	storage.ClearAll()
 	go func() {
 		for {
 			CheckUsers()
 			SubmitTraffic()
-			time.Sleep(config.Base.SyncTime * time.Second)
+			time.Sleep(cfg.SyncTime * time.Second)
 		}
 	}()
 	return nil
